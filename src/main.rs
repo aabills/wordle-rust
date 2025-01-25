@@ -4,7 +4,6 @@ use std::fs;
 mod filter_words;
 mod guess_utilities;
 mod lexicon;
-mod utilities;
 
 //Goal 1: Print list of all compatible words
 //Modes: File input, Interactive
