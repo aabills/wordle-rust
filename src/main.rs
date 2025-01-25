@@ -31,7 +31,11 @@ fn main() {
         //Ensure that all guesses are valid
         for (n, guess) in guesses.iter().enumerate() {
             println!("Guess {}: {}", n, guess.clone());
-            guess_utilities::check_if_guess_is_valid(guess);
+            let is_guess_valid = guess_utilities::check_if_guess_is_valid(guess);
+            if !is_guess_valid {
+                println!("Guess {} is invalid. Terminating program.", guess);
+                return;
+            }
         }
         //Spacing for aesthetics
         for _n in 0..2 {
