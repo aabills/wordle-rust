@@ -13,7 +13,13 @@ fn main() {
     let args: Vec<String> = env::args().collect();
 
     // Load the lexicon. Could add some customization here later
-    let my_lexicon = lexicon::load_lexicon();
+    let my_lexicon: Vec<String> = if args.contains(&String::from("--test")) {
+        let my_lexicon: Vec<String> = lexicon::load_lexicon("data/test_lexicon.txt");
+        my_lexicon
+    } else {
+        let my_lexicon: Vec<String> = lexicon::load_lexicon("data/all_possible_answers.txt");
+        my_lexicon
+    };
 
     if args[1] == "interactive" {
         //Just set interactive to true
