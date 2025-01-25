@@ -1,3 +1,5 @@
 /target
 .DS_Store
 *.txt
+!data/all_possible_answers.txt
+!data/test_lexicon.txt
