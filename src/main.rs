@@ -1,5 +1,6 @@
 use std::env;
 use std::fs;
+use std::process;
 
 mod filter_words;
 mod guess_utilities;
@@ -21,44 +22,50 @@ fn main() {
         my_lexicon
     };
 
-    if args[1] == "interactive" {
-        //Just set interactive to true
-        println!("Running interactive mode");
-    } else if args[1] == "file" {
-        println!("Running non-interactive mode.");
-
-        // Go ahead and read the guess file:
-        let guess_file_strings =
-            fs::read_to_string(args[2].clone()).expect("Could not find input file");
-        println!("Input File: \n{}", guess_file_strings);
-        let guesses: Vec<String> = guess_file_strings.split('\n').map(str::to_string).collect();
-
-        //Ensure that all guesses are valid
-        for (n, guess) in guesses.iter().enumerate() {
-            println!("Guess {}: {}", n, guess.clone());
-            let is_guess_valid = guess_utilities::check_if_guess_is_valid(guess);
-            if !is_guess_valid {
-                println!("Guess {} is invalid. Terminating program.", guess);
-                return;
-            }
+    let run_type = args[1].as_str();
+    match run_type {
+        r"interactive" => {
+            //Just set interactive to true
+            println!("Interactive mode not yet implmented. returning");
+            process::exit(1);
         }
-        //Spacing for aesthetics
-        for _n in 0..2 {
-            println!("");
-        }
-        println!("New lexicon:");
-        //Load the lexicon and check all words against all guesses
-        for word in my_lexicon.iter() {
-            let mut word_is_valid = true;
-            for guess in guesses.iter() {
-                let is_word_valid = filter_words::check_word(guess, word);
-                if !is_word_valid {
-                    word_is_valid = false;
+        r"file" => {
+            println!("Running non-interactive mode.");
+
+            // Go ahead and read the guess file:
+            let guess_file_strings =
+                fs::read_to_string(args[2].clone()).expect("Could not find input file");
+            println!("Input File: \n{}", guess_file_strings);
+            let guesses: Vec<String> = guess_file_strings.split('\n').map(str::to_string).collect();
+
+            //Ensure that all guesses are valid
+            for (n, guess) in guesses.iter().enumerate() {
+                println!("Guess {}: {}", n, guess.clone());
+                let is_guess_valid = guess_utilities::check_if_guess_is_valid(guess);
+                if !is_guess_valid {
+                    println!("Guess {} is invalid. Terminating program.", guess);
+                    process::exit(1);
                 }
             }
-            if word_is_valid {
-                println!("{}", word);
+            println!("\n\nNew lexicon:");
+            //Load the lexicon and check all words against all guesses
+            for word in my_lexicon.iter() {
+                let mut word_is_valid = true;
+                for guess in guesses.iter() {
+                    let is_word_valid = filter_words::check_word(guess, word);
+                    if !is_word_valid {
+                        word_is_valid = false;
+                    }
+                }
+                if word_is_valid {
+                    println!("{}", word);
+                }
             }
+            process::exit(0);
+        }
+        _ => {
+            println!("Invalid run type. Please use 'interactive' or 'file'.");
+            process::exit(1);
         }
     }
 }
