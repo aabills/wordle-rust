@@ -3,6 +3,7 @@ use std::fs;
 use std::io;
 use std::process;
 
+mod algorithms;
 mod filter_words;
 mod guess_utilities;
 mod lexicon;
@@ -13,6 +14,8 @@ mod lexicon;
 fn main() {
     // Read input file
     let args: Vec<String> = env::args().collect();
+
+    let algorithm = algorithms::get_algorithm(&args);
 
     // Load the lexicon. Could add some customization here later
     let my_lexicon: Vec<String> = if args.contains(&String::from("--test")) {
@@ -47,8 +50,11 @@ fn main() {
                 //Print the new lexicon
                 print_new_lexicon(&my_lexicon, &guesses);
 
+                let filtered_lexicon = filter_words::filter_lexicon(&my_lexicon, &guesses);
+                algorithms::run_algorithm(&algorithm, &filtered_lexicon, &guesses);
+
                 //Ask the user if they want to continue
-                println!("Enter 'q' to quit, or 'c' to continue");
+                println!("Enter 'q' to quit, or any key to continue");
                 let mut continue_input: String = String::new();
                 io::stdin()
                     .read_line(&mut continue_input)
@@ -69,6 +75,8 @@ fn main() {
             let guesses: Vec<String> = guess_file_strings.split('\n').map(str::to_string).collect();
 
             print_new_lexicon(&my_lexicon, &guesses);
+            let filtered_lexicon = filter_words::filter_lexicon(&my_lexicon, &guesses);
+            algorithms::run_algorithm(&algorithm, &filtered_lexicon, &guesses);
             process::exit(0);
         }
         _ => {
