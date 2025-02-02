@@ -32,6 +32,7 @@ fn main() {
             //Just set interactive to true
             println!("Now running in interactive mode.\n\n");
             let mut guesses: Vec<String> = Vec::new();
+            algorithms::run_algorithm(&algorithm, &my_lexicon, &guesses);
             // Loop until the user wants to quit
             loop {
                 println!("Enter a guess: ");
@@ -74,6 +75,14 @@ fn main() {
             println!("Input File: \n{}", guess_file_strings);
             let guesses: Vec<String> = guess_file_strings.split('\n').map(str::to_string).collect();
 
+            print_new_lexicon(&my_lexicon, &guesses);
+            let filtered_lexicon = filter_words::filter_lexicon(&my_lexicon, &guesses);
+            algorithms::run_algorithm(&algorithm, &filtered_lexicon, &guesses);
+            process::exit(0);
+        }
+        r"initial-guess" => {
+            println!("Running initial guess mode.");
+            let guesses: Vec<String> = vec![];
             print_new_lexicon(&my_lexicon, &guesses);
             let filtered_lexicon = filter_words::filter_lexicon(&my_lexicon, &guesses);
             algorithms::run_algorithm(&algorithm, &filtered_lexicon, &guesses);

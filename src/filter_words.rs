@@ -44,15 +44,12 @@ fn check_word(guess: &String, word: &String) -> bool {
                     word.chars().filter(|c: &char| *c == letter).count();
                 if letter_count_in_guess <= letter_count_in_word {
                     return false;
-                } else {
-                    println!(
-                        "{} is in the word {} times, but in the guess {} times",
-                        letter, letter_count_in_word, letter_count_in_guess
-                    );
                 }
             }
             FilterType::Includes(letter) => {
                 if !word.contains(letter) {
+                    return false;
+                } else if word.chars().nth(i).unwrap() == letter {
                     return false;
                 }
             }

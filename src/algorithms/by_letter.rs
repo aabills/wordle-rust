@@ -18,6 +18,27 @@ pub fn total_letter_probabilities(lexicon: &Vec<String>) -> Vec<f64> {
     probabilities
 }
 
+pub fn positional_take_a_guess(
+    probabilities: &Vec<Vec<f64>>,
+    lexicon: &Vec<String>,
+) -> (String, f64) {
+    let mut best_word = String::from("");
+    let mut best_prob = 0.0;
+    for word in lexicon {
+        let mut prob = 1.0;
+        let letters = word.chars().collect::<Vec<char>>();
+        for i in 0..5 {
+            let letter_index = letters[i] as usize - 97;
+            prob *= probabilities[i][letter_index];
+        }
+        if prob >= best_prob {
+            best_prob = prob;
+            best_word = word.clone();
+        }
+    }
+    return (best_word, best_prob);
+}
+
 pub fn positional_letter_probabilities(lexicon: &Vec<String>) -> Vec<Vec<f64>> {
     let mut positional_letter_counts: Vec<Vec<i32>> = vec![vec![0; 26]; 5];
     for word in lexicon {

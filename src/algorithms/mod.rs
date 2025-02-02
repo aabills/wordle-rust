@@ -42,7 +42,12 @@ pub fn run_algorithm(algorithm: &Algorithm, lexicon: &Vec<String>, _guesses: &Ve
         }
         Algorithm::PositionalProbabilities => {
             let letter_probabilities = by_letter::positional_letter_probabilities(&lexicon);
+            println!("Most likely letters by position:");
             by_letter::print_likely_letters_by_position(&letter_probabilities);
+            let (best_word, best_prob) =
+                by_letter::positional_take_a_guess(&letter_probabilities, &lexicon);
+            println!("Best word: {}", best_word);
+            println!("Best probability: {}", best_prob);
         }
         Algorithm::None => {
             println!("No algorithm selected.");
