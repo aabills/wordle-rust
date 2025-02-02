@@ -37,11 +37,12 @@ pub fn run_algorithm(algorithm: &Algorithm, lexicon: &Vec<String>, _guesses: &Ve
     match algorithm {
         Algorithm::TotalProbabilities => {
             let letter_probabilities = by_letter::total_letter_probabilities(&lexicon);
-            println!("Letter probabilities: {:?}", letter_probabilities);
+            println!("Most likely letters:");
+            by_letter::print_likely_letters(&letter_probabilities);
         }
         Algorithm::PositionalProbabilities => {
             let letter_probabilities = by_letter::positional_letter_probabilities(&lexicon);
-            println!("Letter probabilities: {:?}", letter_probabilities);
+            by_letter::print_likely_letters_by_position(&letter_probabilities);
         }
         Algorithm::None => {
             println!("No algorithm selected.");

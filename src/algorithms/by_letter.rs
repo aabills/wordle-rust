@@ -63,6 +63,33 @@ fn convert_word_to_one_hot(word: &str) -> Vec<Vec<i32>> {
     one_hot_guesses
 }
 
+pub fn print_likely_letters(probabilities: &Vec<f64>) {
+    let mut sorted_probabilities = probabilities
+        .iter()
+        .enumerate()
+        .collect::<Vec<(usize, &f64)>>();
+    sorted_probabilities.sort_by(|a, b| b.1.partial_cmp(a.1).unwrap());
+    for (i, &prob) in sorted_probabilities {
+        println!("{}: {:.3}", (i as u8 + 97) as char, prob);
+    }
+}
+
+pub fn print_likely_letters_by_position(probabilities: &Vec<Vec<f64>>) {
+    let num_letters = 26;
+    for ranking in 0..num_letters {
+        for position in 0..5 {
+            let mut sorted_probabilities = probabilities[position]
+                .iter()
+                .enumerate()
+                .collect::<Vec<(usize, &f64)>>();
+            sorted_probabilities.sort_by(|a, b| b.1.partial_cmp(a.1).unwrap());
+            let (i, &prob) = sorted_probabilities[ranking];
+            print!("| {}: {:.3} |", (i as u8 + 97) as char, prob);
+        }
+        println!();
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
