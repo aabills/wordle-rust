@@ -15,7 +15,7 @@ fn parse_filter_type(filter_type: char, letter: char) -> FilterType {
     }
 }
 
-pub fn check_word(guess: &String, word: &String) -> bool {
+fn check_word(guess: &String, word: &String) -> bool {
     let letter_guesses: Split<&str> = guess.split(" ");
     let mut i = 0; // position
     for letter_guess in letter_guesses {
@@ -54,6 +54,24 @@ pub fn check_word(guess: &String, word: &String) -> bool {
     true
 }
 
+pub fn filter_lexicon(lexicon: &Vec<String>, guesses: &Vec<String>) -> Vec<String> {
+    let mut filtered_lexicon: Vec<String> = Vec::new();
+    for word in lexicon.iter() {
+        let mut word_is_valid = true;
+        for guess in guesses.iter() {
+            let is_word_valid: bool = check_word(guess, word);
+            if !is_word_valid {
+                word_is_valid = false;
+                break;
+            }
+        }
+        if word_is_valid {
+            filtered_lexicon.push(word.clone());
+        }
+    }
+    filtered_lexicon
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -70,5 +88,17 @@ mod tests {
         let word: String = String::from("raise");
         let guess: String = String::from("ia xb xa xc xk");
         assert!(check_word(&guess, &word));
+    }
+
+    #[test]
+    fn test_filter_lexicon() {
+        let lexicon: Vec<String> = vec![
+            String::from("aback"),
+            String::from("raise"),
+            String::from("aback"),
+        ];
+        let guesses: Vec<String> = vec![String::from("xr ia xi xs xe")];
+        let filtered_lexicon: Vec<String> = filter_lexicon(&lexicon, &guesses);
+        assert_eq!(filtered_lexicon, vec!["aback", "aback"]);
     }
 }
