@@ -1,9 +1,14 @@
+use std::process;
+
 pub fn check_if_guess_is_valid(guess: &String) -> bool {
     // split the guess into
     let split_guess: Vec<String> = guess.split(' ').map(str::to_string).collect();
     let guess_len: usize = split_guess.len();
     if guess_len != 5 {
-        println!("Guess {} is invalid. Guesses must be of length 5.", guess);
+        println!(
+            "Guess {} is invalid. Guesses must be of length 5, guess was length {}",
+            guess, guess_len
+        );
         return false;
     }
     let possible_prefixes: [char; 3] = ['i', 'x', '='];
@@ -29,8 +34,8 @@ pub fn check_if_guess_is_valid(guess: &String) -> bool {
         //Assert that the guess is length 2
         if letter_guess_length != 2 {
             println!(
-                "Part {} of guess {} is invalid because it is not the correct length.",
-                letter_guess, guess
+                "Part {} of guess {} is invalid because it is not the correct length. Part was length {}",
+                letter_guess, guess, letter_guess_length
             );
             return false;
         }
@@ -38,6 +43,17 @@ pub fn check_if_guess_is_valid(guess: &String) -> bool {
 
     println!("Guess {} is valid!", guess);
     return true;
+}
+
+pub fn check_guesses(guesses: &Vec<String>) {
+    for (n, guess) in guesses.iter().enumerate() {
+        println!("Guess {}: {}", n, guess.clone());
+        let is_guess_valid = check_if_guess_is_valid(guess);
+        if !is_guess_valid {
+            println!("Guess {} is invalid. Terminating program.", guess);
+            process::exit(1);
+        }
+    }
 }
 
 #[cfg(test)]
@@ -66,5 +82,11 @@ mod tests {
     #[test]
     fn test_check_if_guess_is_invalid_incorrect_length_of_letter() {
         assert!(!check_if_guess_is_valid(&String::from("xrx ia xi xs x")));
+    }
+
+    #[test]
+    fn test_check_guesses() {
+        let guesses: Vec<String> = vec![String::from("xr ia xi xs xe")];
+        check_guesses(&guesses);
     }
 }

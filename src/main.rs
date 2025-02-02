@@ -1,5 +1,6 @@
 use std::env;
 use std::fs;
+use std::io;
 use std::process;
 
 mod filter_words;
@@ -26,41 +27,48 @@ fn main() {
     match run_type {
         r"interactive" => {
             //Just set interactive to true
-            println!("Interactive mode not yet implmented. returning");
-            process::exit(1);
+            println!("Now running in interactive mode.\n\n");
+            let mut guesses: Vec<String> = Vec::new();
+            // Loop until the user wants to quit
+            loop {
+                println!("Enter a guess: ");
+
+                //Read the guess
+                let mut guess: String = String::new();
+                io::stdin()
+                    .read_line(&mut guess)
+                    .expect("Failed to read line");
+                //Trim the newline character
+                guess = guess.trim().to_string();
+
+                //Add the guess to the list of guesses
+                guesses.push(guess);
+
+                //Print the new lexicon
+                print_new_lexicon(&my_lexicon, &guesses);
+
+                //Ask the user if they want to continue
+                println!("Enter 'q' to quit, or 'c' to continue");
+                let mut continue_input: String = String::new();
+                io::stdin()
+                    .read_line(&mut continue_input)
+                    .expect("Failed to read line");
+                if continue_input.contains("q") {
+                    process::exit(0);
+                }
+            }
         }
         r"file" => {
             println!("Running non-interactive mode.");
 
-            // Go ahead and read the guess file:
-            let guess_file_strings =
-                fs::read_to_string(args[2].clone()).expect("Could not find input file");
+            // Read the guess file
+            let filepath: String = args[2].clone();
+            let guess_file_strings: String =
+                fs::read_to_string(filepath).expect("Could not find input file");
             println!("Input File: \n{}", guess_file_strings);
             let guesses: Vec<String> = guess_file_strings.split('\n').map(str::to_string).collect();
 
-            //Ensure that all guesses are valid
-            for (n, guess) in guesses.iter().enumerate() {
-                println!("Guess {}: {}", n, guess.clone());
-                let is_guess_valid = guess_utilities::check_if_guess_is_valid(guess);
-                if !is_guess_valid {
-                    println!("Guess {} is invalid. Terminating program.", guess);
-                    process::exit(1);
-                }
-            }
-            println!("\n\nNew lexicon:");
-            //Load the lexicon and check all words against all guesses
-            for word in my_lexicon.iter() {
-                let mut word_is_valid = true;
-                for guess in guesses.iter() {
-                    let is_word_valid = filter_words::check_word(guess, word);
-                    if !is_word_valid {
-                        word_is_valid = false;
-                    }
-                }
-                if word_is_valid {
-                    println!("{}", word);
-                }
-            }
+            print_new_lexicon(&my_lexicon, &guesses);
             process::exit(0);
         }
         _ => {
@@ -68,4 +76,16 @@ fn main() {
             process::exit(1);
         }
     }
+}
+
+fn print_new_lexicon(lexicon: &Vec<String>, guesses: &Vec<String>) {
+    //Ensure that all guesses are valid
+    guess_utilities::check_guesses(&guesses);
+
+    //Load the lexicon and check all words against all guesses
+    let filtered_lexicon: Vec<String> = filter_words::filter_lexicon(&lexicon, &guesses);
+
+    //Print the new lexicon
+    println!("\n\nNew lexicon:");
+    println!("{}", filtered_lexicon.join("\n"));
 }
