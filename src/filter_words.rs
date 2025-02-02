@@ -34,8 +34,12 @@ fn check_word(guess: &String, word: &String) -> bool {
                 // What this actually means is that there are fewer occurances of the letter in the word than in the guess.
                 // count the occurances of the letter in the guess.
                 // Then count the occurances of the letter in the word.
+                let guess_word: String = guess
+                    .split(" ")
+                    .map(|s| s.chars().nth(1).unwrap())
+                    .collect();
                 let letter_count_in_guess: usize =
-                    guess.chars().filter(|c: &char| *c == letter).count();
+                    guess_word.chars().filter(|c: &char| *c == letter).count();
                 let letter_count_in_word: usize =
                     word.chars().filter(|c: &char| *c == letter).count();
                 if letter_count_in_guess <= letter_count_in_word {
@@ -44,6 +48,8 @@ fn check_word(guess: &String, word: &String) -> bool {
             }
             FilterType::Includes(letter) => {
                 if !word.contains(letter) {
+                    return false;
+                } else if word.chars().nth(i).unwrap() == letter {
                     return false;
                 }
             }
